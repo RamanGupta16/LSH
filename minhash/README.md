@@ -65,11 +65,39 @@ As the size and number of documents grows the improvements in speed is more pron
 4. Convert MinHash Signatures into Bands-Hash List.
 
 ## Main Matching Step
-1. Select all corpus documents from database where *band* and *hash* matches that of the user document Bands-Hash List. This is the major reduction in search space. Instead of finding Jaccard Similarity for all documents in entire corpus space, narrow it down to just this Candidate List of corpus documents.
+1. Select all corpus documents from database where *band* and *hash* matches that of the given user document Bands-Hash List. This is the major reduction in search space. Instead of finding Jaccard Similarity for all documents in entire corpus space, narrow it down to just this Candidate List of corpus documents.
 2. Compare each corpus documents from this Candidate List with the user document:
 - Find how many corresponding MinHash Signatures matches between current corpus document and user document.
 - *Document Similarity = Number of MinHash Signatures matches / Size of MinHash Signatures*
 - Document Similarity ratio is the *estimate* of the Jaccard Similarity and thus “overall similarity” of 2 documents. This ratio also helps to rank the matches.
 - Highest Similarity documents is the most matching document and returned to user as enriched document corresponding to user document.
 
+
+## Code
+```
+1. LSH MinHash Python3 Code : lsh_minhash_document_matching.py
+2. Corpus documents database : corpus.txt
+3. User Inputs : user_inputs.txt
+```
+
+### Processing of Corpus Documents: Sample processing of corpus document Id2 (Titanic 1997)
+1.	Normalize, Bigrams and convert into one word shingles => ['Ti', 'it', 'ta', 'an', 'ni', 'ic', 'James', 'Cameron', 'Leonardo', 'DiCaprio', 'Kate', 'Winslet', '1997', '195', 'English']
+2.	MinHash Signatures List of length 1000 => [51698105, 71268306093….]
+3.	Bands-Hash List of length 250 (b=250, r=4, b*r=1000) => [679105346, 307527197…]
+
+### Processing of User Document: Sample processing of Req1
+1.	Normalize, Bigrams and convert into shingles => ['Ti', 'it', 'ta', 'an', 'ni', 'ic', 'Cameron']
+2.	MinHash Signatures List of length 1000 => [51698105, 71268306093….]
+3.	Bands-Hash List of length 250 (b=250, r=4, b*r=1000) => [679105346, 307527197…]
+
+*Note*: Hash Values can be differrent in real execution
+
+### Main User Document Matching Step
+1.	Candidate List: Select all corpus documents from database where band and hash matches that of the user document Bands-Hash List.
+- For user document Req1 the corpud documents candidate list is : [Id1(Titanic 1953), Id2(Titanic 1997)]
+
+2.	From this Candidate List:
+- Jaccard Similarity estimated from MinHash Signatures List => [0.421, 0.51]
+- Actual Jaccard Similarity => [0.434, 0.543]
+- Highest Similarity score is of corpus document Id2(Titanic 1997), and thus it is the most matching corpus document for user input Req1.
 
