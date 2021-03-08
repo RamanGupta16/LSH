@@ -110,3 +110,13 @@ Similarity Threshold = (1.0/BANDS)**(1.0/ROWS) # (1/b)^(1/r)
 Bands = b = 250  
 Rows = r = 4
 Similarity Threshold = 0.25
+
+
+### Results  
+- MATCH FOUND 	:: For userDoc Req1 Higest matched corpus documet is Id2 with matching score:0.521000
+- MATCH FOUND 	:: For userDoc Req2 Higest matched corpus documet is Id4 with matching score:0.279000
+- MATCH FOUND 	:: For userDoc Req3 Higest matched corpus documet is Id3 with matching score:0.330000
+- MATCH FOUND 	:: For userDoc Req4 Higest matched corpus documet is Id1 with matching score:0.521000
+- MATCH FOUND 	:: For userDoc Req5 Higest matched corpus documet is Id6 with matching score:0.595000
+- MATCH FOUND 	:: For userDoc Req6 Higest matched corpus documet is Id7 with matching score:0.417000
+- NO MATCH FOUND 	:: For userDoc Req7 Higest matched corpus documet is Id2 with matching score:0.142000 less than SIMILARITY_THRESHOLD:0.251487
