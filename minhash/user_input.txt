@@ -1,0 +1,17 @@
+# Incomplete Director name. No Cast
+{ "Title" : "Titanic", "Id" : "Req1", "Director" : "Cameron"}
+
+# Incomplete Title Name. No Cast
+{ "Title" : "Slumdog", "Id": "Req2", "ReleaseYear" : "2008"}
+
+# misspelled Title Name. No Director
+{ "Title" : "god fathr", "Id": "Req3", "Cast": "Marlon Brando"}
+
+{ "Title" : "Titanic", "Id" : "Req4", "ReleaseYear" : "1953"}
+
+# Spanish version of originally English language movie
+{ "Title" : "Pretty Woman", "Id" : "Req5", "Language" : "Spanish"}
+
+{ "Title" : "God Father II", "Id": "Req6", "Cast": "Al Pacino"}
+
+{ "Title" : "Anaconda", "Id": "Req7", "ReleaseYear" : "1997"}
