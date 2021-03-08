@@ -76,8 +76,9 @@ As the size and number of documents grows the improvements in speed is more pron
 ## Code
 ```
 1. LSH MinHash Python3 Code : lsh_minhash_document_matching.py
-2. Corpus documents database : corpus.txt
-3. User Inputs : user_inputs.txt
+2. Python modules required : numpy, mmh3 (MurMurHash3), sklearn
+3. Corpus documents database : corpus.txt
+4. User Inputs : user_inputs.txt
 ```
 
 ### Processing of Corpus Documents: Sample processing of corpus document Id2 (Titanic 1997)
@@ -97,7 +98,15 @@ As the size and number of documents grows the improvements in speed is more pron
 - For user document Req1 the corpud documents candidate list is : [Id1(Titanic 1953), Id2(Titanic 1997)]
 
 2.	From this Candidate List:
-- Jaccard Similarity estimated from MinHash Signatures List => [0.421, 0.51]
-- Actual Jaccard Similarity => [0.434, 0.543]
+- LSH Similarity (Jaccard Similarity estimated from MinHash Signatures List) of candidates => [0.421, 0.521]
+- Actual Jaccard Similarity of candidates => [0.411765, 0.500]
 - Highest Similarity score is of corpus document Id2(Titanic 1997), and thus it is the most matching corpus document for user input Req1.
 
+### Similarity Threshold 
+Similarity Threshold (ratio) is the minimum LSH Similarity or Jaccard Similarity threshold below which a pair of documents will not be considered matched. Example if 2 docuemnts have LSH Similarity or Jaccard Similarity = 0.05 then it is too low a matching score value to deduce that documents are similar. 
+```
+Similarity Threshold = (1.0/BANDS)**(1.0/ROWS) # (1/b)^(1/r)
+```
+Bands = b = 250  
+Rows = r = 4
+Similarity Threshold = 0.25
