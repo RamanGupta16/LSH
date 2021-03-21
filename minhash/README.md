@@ -73,20 +73,23 @@ As the size and number of documents grows the improvements in speed is more pron
 - Highest Similarity documents is the most matching document and returned to user as enriched document corresponding to user document.
 
 
-## Code
+## Python3 Code
 ```
-1. LSH MinHash Python3 Code : lsh_minhash_document_matching.py
-2. Python modules required : numpy, mmh3 (MurMurHash3), sklearn
-3. Corpus documents database : corpus.txt
-4. User Inputs : user_inputs.txt
+1. Main driver code : main.py
+2. Wikipedia Web scrapping code : scrape_wikipedia_movies.py. This creates corpus corpus_wikipedia.txt file
+3. LSH MinHash Code : lsh_minhash_document_matching.py
+4. Python modules required : json, numpy, mmh3 (MurMurHash3), sklearn, dateutil, BeautifulSoup
+5. Corpus documents database : corpus.txt, corpus_wikipedia.txt
+6. User Inputs : user_inputs.txt
+7. Execution : python main.py
 ```
 
-### Processing of Corpus Documents: Sample processing of corpus document Id2 (Titanic 1997)
+### Processing of Corpus Documents: Sample processing of corpus document (Titanic 1997)
 1.	Normalize, Bigrams and convert into one word shingles => ['Ti', 'it', 'ta', 'an', 'ni', 'ic', 'James', 'Cameron', 'Leonardo', 'DiCaprio', 'Kate', 'Winslet', '1997', '195', 'English']
 2.	MinHash Signatures List of length 1000 => [51698105, 71268306093….]
 3.	Bands-Hash List of length 250 (b=250, r=4, b*r=1000) => [679105346, 307527197…]
 
-### Processing of User Document: Sample processing of Req1
+### Processing of User Document: Sample processing of User Request
 1.	Normalize, Bigrams and convert into shingles => ['Ti', 'it', 'ta', 'an', 'ni', 'ic', 'Cameron']
 2.	MinHash Signatures List of length 1000 => [51698105, 71268306093….]
 3.	Bands-Hash List of length 250 (b=250, r=4, b*r=1000) => [679105346, 307527197…]
@@ -113,10 +116,9 @@ Similarity Threshold = 0.25
 
 
 ### Results  
-- MATCH FOUND 	:: For userDoc Req1 Higest matched corpus documet is Id2 with matching score:0.521000
-- MATCH FOUND 	:: For userDoc Req2 Higest matched corpus documet is Id4 with matching score:0.279000
-- MATCH FOUND 	:: For userDoc Req3 Higest matched corpus documet is Id3 with matching score:0.330000
-- MATCH FOUND 	:: For userDoc Req4 Higest matched corpus documet is Id1 with matching score:0.521000
-- MATCH FOUND 	:: For userDoc Req5 Higest matched corpus documet is Id6 with matching score:0.595000
-- MATCH FOUND 	:: For userDoc Req6 Higest matched corpus documet is Id7 with matching score:0.417000
-- NO MATCH FOUND 	:: For userDoc Req7 Higest matched corpus documet is Id2 with matching score:0.142000 less than SIMILARITY_THRESHOLD:0.251487
+- Matched user input Req1(Titanic) with WIKI291(Titanic) with score 0.521
+- Matched user input Req2(Slumdog) with Id3(Slumdog Millionaire) with score 0.279
+- Matched user input Req3(god fathr) with WIKI451(The Godfather) with score 0.33
+- Matched user input Req4(Titanic) with Id1(Titanic) with score 0.521
+- Matched user input Req5(Pretty Woman) with Id5(Pretty Woman) with score 0.595
+- Matched user input Req6(God Father II) with Id6(The Godfather Part II) with score 0.417
