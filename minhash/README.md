@@ -115,7 +115,9 @@ Rows = r = 4
 Similarity Threshold = 0.25
 
 
-### Results  
+### Results : 
+#### Corpus ([corpus_wikipedia.txt](https://github.com/RamanGupta16/LSH/blob/main/minhash/corpus_wikipedia.txt) and [corpus.txt](https://github.com/RamanGupta16/LSH/blob/main/minhash/corpus.txt)) 
+#### User Inputs [user_input.txt](https://github.com/RamanGupta16/LSH/blob/main/minhash/user_input.txt)
 - Matched user input Req1(Titanic) with WIKI291(Titanic) with score 0.521
 - Matched user input Req2(Slumdog) with Id3(Slumdog Millionaire) with score 0.279
 - Matched user input Req3(god fathr) with WIKI451(The Godfather) with score 0.33
