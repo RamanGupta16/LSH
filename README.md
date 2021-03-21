@@ -4,4 +4,7 @@
 LSH differs from a cryptographic hash, because aim here is to maximise collisions to bucketize the similar documents. 
 
 # LSH Techniques
-- [MinHash](https://github.com/RamanGupta16/LSH/tree/main/minhash) :: One of the methods of LSH is MinHash or the min-wise independent permutations. MinHash quickly estimates Jaccard Similarity of two documents and thus finds degree of “similarity” of 2 documents. This degree of similarity can be used to rank nearest neighbours or match a document against a corpus of documents. MinHash is described in detail along with code in [MinHash](https://github.com/RamanGupta16/LSH/tree/main/minhash)
+- [MinHash](https://github.com/RamanGupta16/LSH/tree/main/minhash) :: One of the methods of LSH is MinHash or the min-wise independent permutations. MinHash quickly estimates *Jaccard Similarity* of two documents and thus finds degree of “similarity” of 2 documents. This degree of similarity can be used to rank nearest neighbours or match a document against a corpus of documents. MinHash is described in detail along with code in [MinHash](https://github.com/RamanGupta16/LSH/tree/main/minhash)
+
+![LSH MinHash Image](https://github.com/RamanGupta16/LSH/blob/main/docs/LSH_MinHash_Process.jpg)
+
