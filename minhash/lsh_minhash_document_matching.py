@@ -94,6 +94,8 @@ def process_corpus_doc(doc):
 		Ti = Ti + ' ' # Ti must have length of minimum 2
 	Ti_bigrams_list = [ Ti[i:i+2] for i in range(len(Ti)-1) ]
 	Cast_List = doc['Cast'].split(',')
+	if len(Cast_List) > 2: # Consider top 2 cast only
+		Cast_List = Cast_List[0:2]
 	Di_List = doc['Director'].split(',')
 	Description = doc['Description']
 	Du = doc["Duration"]
@@ -112,16 +114,24 @@ def process_corpus_doc(doc):
 	#print('len of minhash_signature_band_hash %d' % len(minhash_signature_band_hash))
 
 	# Store in database
-	CORPUS[Id] = {'minhash_signature':minhash_signature, 'normalised_data':normalised_data, 'shingles':shingles}
+	CORPUS[Id] = {'minhash_signature':minhash_signature, 'normalised_data':normalised_data, 'shingles':shingles, 'Title':doc['Title']}
 	for band, band_hash in enumerate(minhash_signature_band_hash):
 		CORPUS_BAND_BUCKET[band][band_hash].append(Id)
 
 # Process Corpus database from file corpus.txt
-def process_corpus():
-	with open('corpus.txt', 'r') as corpus:
+def process_corpus(corpus_file='corpus.txt'):
+	stats = {'total_count': 0, 'successfully_processed_count': 0}
+	print(f"Reading corpus data file {corpus_file}")
+	with open(corpus_file, 'r') as corpus:
 		for line in corpus:
+			stats['total_count'] += 1
 			line = json.loads(line.strip())
-			process_corpus_doc(line)
+			try:
+				process_corpus_doc(line)
+				stats['successfully_processed_count'] += 1
+			except Exception as e:
+				print(f"Exception:{e} During processing of corpus entry {line}")
+	return stats
 
 # Process User Document
 def process_user_input(doc):
@@ -138,6 +148,8 @@ def process_user_input(doc):
 	Cast_List = []
 	if doc.get('Cast'):
 		Cast_List = doc['Cast'].split(',')
+	if len(Cast_List) > 2: # Consider top 2 cast only
+		Cast_List = Cast_List[0:2]
 
 	Di_List = []
 	if doc.get('Director'):
@@ -157,21 +169,31 @@ def process_user_input(doc):
 	minhash_signature_band_hash = convert_into_bands_hash_list(minhash_signature)
 	#print('len of minhash_signature_band_hash %d' % len(minhash_signature_band_hash))
 
-	userDoc = {'minhash_signature':minhash_signature, 'minhash_signature_band_hash' : minhash_signature_band_hash, 'normalised_data':normalised_data, 'shingles':shingles, 'Id' : Id}
+	userDoc = {'minhash_signature':minhash_signature, 'minhash_signature_band_hash' : minhash_signature_band_hash, 'normalised_data':normalised_data, 'shingles':shingles, 'Id' : Id, 'Title':doc['Title']}
 	return userDoc
 
 # Read User Document to match from file user_input.txt
 def read_and_match_user_inputs():
+	stats = {'request_count': 0, 'total_matched_count': 0, 'total_unmatched_count': 0, 'total_unmatched_lower_threshold':0}
+	results = {}
 	with open('user_input.txt', 'r') as user_inputs:
 		for line in user_inputs:
 			line = line.strip()
 			if line and not line.startswith('#'):
+				stats['request_count'] += 1
 				user_input_doc = json.loads(line)
-				u = process_user_input(user_input_doc)
-				match_and_rank(u)
+				user_doc = process_user_input(user_input_doc)
+				result = match_and_rank(user_doc, stats)
+				if result:
+					match, score = result
+					matched_corpus_id = match['Id']
+					matched_corpus_title = CORPUS[matched_corpus_id]['Title']
+					user_doc_title = user_doc['Title']
+					results[user_doc['Id']] = (user_doc_title, matched_corpus_id, matched_corpus_title, score)
+	return stats, results
 
 # Main matching step
-def match_and_rank(userDoc):
+def match_and_rank(userDoc, stats):
 	candidate_list = set()
 	for band, band_hash in enumerate(userDoc['minhash_signature_band_hash']):
 		band_bucket = CORPUS_BAND_BUCKET[band]
@@ -199,23 +221,37 @@ def match_and_rank(userDoc):
 		LIST_LSH_SIMILARITY_SCORE.append(lsh_similarity)
 		LIST_JACCARD_SIMILARITY_SCORE.append(jaccard_similarity)
 
+	final_result = None
+
 	# Sort Results with highest LSH Similarity scored item as first
 	results.sort(key = lambda similarity: similarity['LSH_Similarity_Estimate'], reverse=True)
 	if results:
 		score = results[0]['LSH_Similarity_Estimate']
 		if score >= SIMILARITY_THRESHOLD:
 			print('MATCH FOUND 	:: For userDoc %s Higest matched corpus documet is %s with matching score:%f' % (userDoc['Id'], results[0]['Id'], score))
+			stats['total_matched_count'] += 1
+			final_result = results[0], score
 		else:
 			print('NO MATCH FOUND 	:: For userDoc %s Higest matched corpus documet is %s with matching score:%f less than SIMILARITY_THRESHOLD:%f' % (userDoc['Id'], results[0]['Id'], score, SIMILARITY_THRESHOLD))
+			stats['total_unmatched_lower_threshold'] += 1
 	else:
 		print('NO MATCH FOUND 	:: No Corpus document matched')
+		stats['total_unmatched_count'] += 1
+
+	return final_result
+
+def print_stats():
+	mse = mean_squared_error(LIST_JACCARD_SIMILARITY_SCORE, LIST_LSH_SIMILARITY_SCORE)
+	rmse = mean_squared_error(LIST_JACCARD_SIMILARITY_SCORE, LIST_LSH_SIMILARITY_SCORE, squared=False)
+	print("Difference between JACCARD_SIMILARITY_SCORE and LSH_SIMILARITY_SCORE 	mean_squared_error:%f	root_mean_squared_error:%f" % (mse, rmse))
+
 
 if __name__ == "__main__":
 	print('BANDS:%d		ROWS:%d		NUM_HASHES:%d	SIMILARITY_THRESHOLD:%f' % (BANDS, ROWS, NUM_HASHES, SIMILARITY_THRESHOLD))
 	print("Processing Corpus Documents...")
-	process_corpus()
+	corpus_stats = process_corpus()
+	print(f"Corpus Processing Stats {corpus_stats}")
 	print("Matching User Documents")
-	read_and_match_user_inputs()
-	mse = mean_squared_error(LIST_JACCARD_SIMILARITY_SCORE, LIST_LSH_SIMILARITY_SCORE)
-	rmse = mean_squared_error(LIST_JACCARD_SIMILARITY_SCORE, LIST_LSH_SIMILARITY_SCORE, squared=False)
-	print("JACCARD_SIMILARITY_SCORE and LSH_SIMILARITY_SCORE 	mean_squared_error:%f	root_mean_squared_error:%f" % (mse, rmse))
+	user_matches_stats, results = read_and_match_user_inputs()
+	print(f"User Input Match Stats {user_matches_stats}")
+	print_stats()
